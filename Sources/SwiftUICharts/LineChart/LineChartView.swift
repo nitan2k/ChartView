@@ -14,6 +14,8 @@ public struct LineChartView: View {
     public var title: String
     public var legend: String?
     public var style: ChartStyle
+    public var gradient: GradientColor
+
     public var darkModeStyle: ChartStyle
     
     public var formSize:CGSize
@@ -36,22 +38,26 @@ public struct LineChartView: View {
     public init(data: [Double],
                 title: String,
                 legend: String? = nil,
+                Gradient: GradientColor,
                 style: ChartStyle = Styles.lineChartStyleOne,
                 form: CGSize? = ChartForm.medium,
-                rateValue: Int?,
+                rateValue: Int? = 14,
                 dropShadow: Bool? = true,
-                valueSpecifier: String? = "%.1f") {
+                valueSpecifier: String? = "%.1f"
+                ) {
         
         self.data = ChartData(points: data)
         self.title = title
         self.legend = legend
+        self.gradient = Gradient
         self.style = style
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
         self.formSize = form!
         frame = CGSize(width: self.formSize.width, height: self.formSize.height/2)
         self.dropShadow = dropShadow!
         self.valueSpecifier = valueSpecifier!
-        self.rateValue = rateValue
+        let denom = (1-(data.min() ?? -1)/(data.max() ?? 1))*100
+        self.rateValue = Int(denom)
     }
     
     public var body: some View {
@@ -73,15 +79,15 @@ public struct LineChartView: View {
                                 .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor :self.style.legendTextColor)
                         }
                         HStack {
-                            
-                            if let rateValue = self.rateValue
+
+                            if (self.rateValue ?? 0 != 0)
                             {
-                                if (rateValue ?? 0 >= 0){
+                                if (self.rateValue ?? 0 >= 0){
                                     Image(systemName: "arrow.up")
                                 }else{
                                     Image(systemName: "arrow.down")
                                 }
-                                Text("\(rateValue!)%")
+                                Text("\(self.rateValue!)%")
                             }
                         }
                     }
@@ -105,7 +111,9 @@ public struct LineChartView: View {
                          touchLocation: self.$touchLocation,
                          showIndicator: self.$showIndicatorDot,
                          minDataValue: .constant(nil),
-                         maxDataValue: .constant(nil)
+                         maxDataValue: .constant(nil),
+                         showBackground: true,
+                         gradient: self.gradient
                     )
                 }
                 .frame(width: frame.width, height: frame.height)
@@ -142,10 +150,10 @@ public struct LineChartView: View {
 struct WidgetView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            LineChartView(data: [8,23,54,32,12,37,7,23,43], title: "Line chart", legend: "Basic")
+            LineChartView(data: [8,23,54,32,12,37,7,23,43], title: "Line chart", legend: "Basic",Gradient: GradientColors.green)
                 .environment(\.colorScheme, .light)
             
-            LineChartView(data: [282.502, 284.495, 283.51, 285.019, 285.197, 286.118, 288.737, 288.455, 289.391, 287.691, 285.878, 286.46, 286.252, 284.652, 284.129, 284.188], title: "Line chart", legend: "Basic")
+            LineChartView(data: [282.502, 284.495, 283.51, 285.019, 285.197, 286.118, 288.737, 288.455, 289.391, 287.691, 285.878, 286.46, 286.252, 284.652, 284.129, 284.188], title: "Line chart", legend: "Basic",Gradient: GradientColors.green)
             .environment(\.colorScheme, .light)
         }
     }
