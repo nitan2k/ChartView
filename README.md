@@ -1,6 +1,7 @@
 # SwiftUI Charts - nitan2k fork
 ### Line Graph fixes
-by Nitan Singh
+by Nitan Singh 
+
 Forked from https://github.com/AppPear/ChartView
 
 ## Overview
